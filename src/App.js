@@ -63,14 +63,41 @@ And here. | Okay. | I think we get it.
 ![React Logo w/ Text](https://goo.gl/Umyytc)
 `;
 
+const iconMax = "fas fa-window-maximize"
+const iconMin = "fas fa-window-minimize"
+
 class App extends Component {
 
   state = {
-    value: EXAMPLE
+    value: EXAMPLE,
+    editorIcon: iconMax,
+    previewIcon: iconMax,
+    editorIsHidden: false,
+    previewIsHidden: false
   }
 
   handleValueChange = (evt) => {
     this.setState({ value: evt.target.value });
+  }
+
+  handleEditorMaxMin = () => {
+    if (this.state.editorIcon === iconMax) {
+      this.setState({ editorIcon: iconMin });
+      this.setState({ previewIsHidden: true });
+    } else {
+      this.setState({ editorIcon: iconMax });
+      this.setState({ previewIsHidden: false });
+    }
+  }
+
+  handlePreviewMaxMin = () => {
+    if (this.state.previewIcon === iconMax) {
+      this.setState({ previewIcon: iconMin });
+      this.setState({ editorIsHidden: true });
+    } else {
+      this.setState({ previewIcon: iconMax });
+      this.setState({ editorIsHidden: false });
+    }
   }
 
   componentDidMount() {
@@ -82,17 +109,23 @@ class App extends Component {
   }
 
   render() {
+    
+    const containerStyle = this.state.previewIsHidden ? {width: '100%', height: '100%'} : {};
+    const editorStyle = this.state.editorIsHidden ? {display: 'none'} : {};
+    const editorRows = this.state.previewIsHidden ? "30" : "5";
+    const previewStyle = this.state.previewIsHidden ? {display: 'none'} : this.state.editorIsHidden ? {} : {};
+
     return (
-      <Container className="justify-content-md-center" id="app-container">
-        <div id="edit-preview-div">
-          <div id="editor-field">
-            <label id="editor-label" htmlFor="markdown-editor">Editor</label>
-            <textarea className="rounded" id="editor" name="markdown-editor" rows="5" cols="69" onChange={this.handleValueChange} value={this.state.value}>
+      <Container className="justify-content-center" id="app-container">
+        <div style={containerStyle} id="edit-preview-div">
+          <div style={editorStyle} id="editor-field">
+            <div className="editor-label">Editor<i className={this.state.editorIcon} onClick={this.handleEditorMaxMin} /></div>
+            <textarea id="editor" name="markdown-editor" rows={editorRows} onChange={this.handleValueChange} value={this.state.value}>
             </textarea>
           </div>
-          <div id="preview-field">
-            <label id="preview-label" htmlFor="preview">Preview</label>
-            <div className="rounded" id="preview" dangerouslySetInnerHTML={{__html:DOMPurify.sanitize(marked(this.state.value))}}>
+          <div  style={previewStyle} id="preview-field">
+            <div className="preview-label">Preview<i className={this.state.previewIcon} onClick={this.handlePreviewMaxMin} /></div>
+            <div id="preview" dangerouslySetInnerHTML={{__html:DOMPurify.sanitize(marked(this.state.value))}}>
             </div>
           </div>
         </div>
